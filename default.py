@@ -51,7 +51,7 @@ if __name__ == '__main__':
 	# Main Loop 
 	while main.data[0] != "\ex": 
 		
-		if main.data == "-1":
+		if main.data[0] == "-1":
 			
 			# According to the unix manpage for recv(), when any sort of error occours, the value returned is -1
 			
