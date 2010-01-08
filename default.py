@@ -12,7 +12,7 @@ try:
 	sys.path.append(u"c:\\data\\python\\lib")
 	import appuifw as ui
 	from communications import bluSocks as BS
-	from communications import sms as msg
+#	from appui import gui
 	import e32
 	import appswitch
 	
@@ -23,7 +23,7 @@ except:
 	import e32
 	import appuifw
 
-	#Modo panic
+	# panic
 	def exithandler(): 
 		exitlock.signal()
 
@@ -41,15 +41,33 @@ except:
 
 if __name__ == '__main__':
 	
+	# Loads the GUI of the application
+#	appgui = gui()
 	
+	# Starts the bluetooth protocol
 	main = BS()
-	
 	main.startService()
 
+	# Main Loop 
 	while main.data[0] != "\ex": 
-		main.recvData()
-		print main.data
-		main.sendData()
+		
+		if main.data == "-1":
+			
+			# According to the unix manpage for recv(), when any sort of error occours, the value returned is -1
+			
+			main.serverSocket.close()
+			main.clientConn.close()
+			
+			#realocate the connection
+			main.startService()
+	
+		else: 
+			
+			main.recvData()
+			print main.data
+			
+			# Some validations will go here in the near future
+			main.sendData()
 		
 	
 	ui.app.set_exit()

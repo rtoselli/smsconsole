@@ -62,12 +62,6 @@ class bluSocks(object):
 		
 	def recvData(self):
 		"""Recieves data from the socket"""
-		
-		if not self.clientConn:
-			self.serverSocket.close()
-			self.clientConn.close()
-			self.data = ["\ex"]
-					
 		self.data = str(self.clientConn.recv(4068)).rsplit("|")
 			
 	def sendData(self):
