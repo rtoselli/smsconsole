@@ -14,6 +14,7 @@ All rights reserved.
 """
 
 import btsocket as bt
+import messaging
 import appuifw as ui
 import appswitch
 
@@ -25,9 +26,10 @@ class bluSocks(object):
 		self.serviceName = u'Smsconsole Daemon'
 		self.serverSocket = None
 		self.channel = None
-		self.data = ''
+		self.data = [""]
 		self.clientAddr = None
 		self.clientConn = None
+		self.sms = sms()
 		
 	def startService(self):
 		"""Initiates the bluetooth sockets and listen for a connection"""
@@ -61,34 +63,34 @@ class bluSocks(object):
 	def recvData(self):
 		"""Recieves data from the socket"""
 		
-		while self.data[:3] != "\ex":
-			
-			if not self.clientConn: break
-			
-			self.data = self.clientConn.recv(4068)
-			self.sendMsg()
-		
-		try:
+		if not self.clientConn:
 			self.serverSocket.close()
 			self.clientConn.close()
-		except:
-			pass
+			self.data = ["\ex"]
+					
+		self.data = str(self.clientConn.recv(4068)).rsplit("|")
 			
-	def sendMsg(self):
-		"""Sends message over the SMS module"""
-		print str(self.data)
-
-
-
+	def sendData(self):
+		"""docstring for sendData"""
+		if len(self.data) == 4 and self.data[3] == "1":
+			appswitch.switch_to_fg(u'PythonScriptShell')
+			ui.note(u"Sending msg: %s" % (self.data[1]),"info")
+			appswitch.switch_to_bg(u'PythonScriptShell')
+		
+			self.sms.name = u"%s" % (self.data[2])
+			self.sms.msg = u"%s" % (self.data[1])
+			self.sms.number = u"%s" % (self.data[0])
+			self.sms.sendMsg()
+			
 
 class sms(object):
 	"""Handles the sms sending/receiving"""
 
-	def __init__(self,num=u'',msg=u'',name=u''):
-		self.number = num
-		self.msg = msg
+	def __init__(self):
+		self.number = None
+		self.msg = None
 		self.encoding = '7bit'
-		self.name = name
+		self.name = None
 
 	def sendMsg(self):
 		"""Sms sending method"""

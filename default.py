@@ -9,10 +9,12 @@ All rights reserved.
 
 try:
 	import sys
-	sys.path.append(u"c:\\data\\python")
+	sys.path.append(u"c:\\data\\python\\lib")
 	import appuifw as ui
 	from communications import bluSocks as BS
+	from communications import sms as msg
 	import e32
+	import appswitch
 	
 except:
 	
@@ -43,7 +45,13 @@ if __name__ == '__main__':
 	main = BS()
 	
 	main.startService()
-	main.recvData()
+
+	while main.data[0] != "\ex": 
+		main.recvData()
+		print main.data
+		main.sendData()
+		
+	
 	ui.app.set_exit()
 	
 
